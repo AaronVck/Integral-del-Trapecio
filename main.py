@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import Toplevel
+
 from sympy import sympify, SympifyError, sqrt, symbols
 
 root = Tk()
