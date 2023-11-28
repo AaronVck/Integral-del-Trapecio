@@ -4,9 +4,9 @@ from sympy import sympify, SympifyError, sqrt, symbols
 
 root = Tk()
 root.title("Integral del Trapecio")
-root.geometry("300x200")
+root.geometry("500x400")
 
-
+font_size = 16
 
 menu = Menu(root)
 root.config(menu=menu)
@@ -29,10 +29,10 @@ Integrals.add_command(label = "Calcular integral", command=lambda:calculateTrape
 menu.add_cascade(label="Opciones", menu=Options)
 menu.add_cascade(label="Trapecio", menu=Integrals)
 
-display = Entry(root)
+display = Entry(root, font=("Helvetica", font_size))
 
 
-display.grid(row=1, columnspan=6, sticky=W+E)
+display.grid(row=1, columnspan=6, sticky=N+S+W+E)
 
 x = symbols('x')
 
@@ -65,6 +65,9 @@ def undo():
     displayNewState = displayState[:-1]
     clearDisplay()
     display.insert(0,displayNewState)
+  elif len(displayState) == 0:
+    clearDisplay()
+  
   else:
     clearDisplay()
     display.insert(0,'Error')
@@ -111,7 +114,7 @@ def upintegralLimit():
   try:
     upLimit = sympify(displayState)
     display.insert(0, "Limite superior:")
-    print(upLimit)
+    
   except SympifyError:
     clearDisplay()
     display.insert(0,'Error')
@@ -141,40 +144,50 @@ def nNumber():
 
 def calculateTrapeze():
   global downLimit, upLimit, n, mathFunction
+  upLimit = upLimit.evalf()
   iter = 0
   finalFunction = []
   mid = 0
   clearDisplay()
+  
   if downLimit == "" or upLimit == "" or n == "" or mathFunction == "":
     
     display.insert(0,'Error ingrese los valores necesarios')
   else:
+    
     if downLimit>upLimit:
+      
       clearDisplay()
       display.insert(0,"Error, revise los limites")
     else:
+      
       mathFunction = sympify(mathFunction)
       triangle = ((upLimit - downLimit) / n).evalf()
       clearDisplay()
       display.insert(0, triangle)
+      
       
       while True:
         
         finalFunction.append(mathFunction.evalf(subs={x:downLimit}))
         downLimit += triangle
         iter +=1
-        
-        if downLimit == upLimit:
+        print('limit sup '+str(upLimit)+', limit inf '+str(downLimit))
+        if downLimit == upLimit or iter == n:
+          
           iter +=1
           finalFunction.append(mathFunction.evalf(subs={x:downLimit}))
           downLimit += triangle
           
           break
-      print(finalFunction[0])
+      position = 0
+      print('X'+str(position)+'='+str(finalFunction[0]))
       for elemento in finalFunction[1:-1]:
-        print(mid)
+        position += 1
+        print('X'+str(position)+'='+str(mid))
         mid = mid + (elemento * 2)
-      print(finalFunction[-1])
+      position += 1
+      print('X'+str(position)+'='+str(finalFunction[-1]))
       mid = mid + (finalFunction[0])
       mid = mid + (finalFunction[-1])
       
@@ -185,42 +198,47 @@ def calculateTrapeze():
 
 
 
-Button(root,text="1", command=lambda:getNumbers(1)).grid(row=2 , column=0, sticky=W+E)
-Button(root,text="2", command=lambda:getNumbers(2)).grid(row=2 , column=1, sticky=W+E)
-Button(root,text="3", command=lambda:getNumbers(3)).grid(row=2 , column=2, sticky=W+E)
-Button(root,text="⇐", command=lambda:undo()).grid(row=2 , column=3, sticky=W+E)
-Button(root,text="AC",command=lambda:clearDisplay()).grid(row=2 , column=4, sticky=W+E)
-
-Button(root,text="4", command=lambda:getNumbers(4)).grid(row=3 , column=0, sticky=W+E)
-Button(root,text="5", command=lambda:getNumbers(5)).grid(row=3 , column=1, sticky=W+E)
-Button(root,text="6", command=lambda:getNumbers(6)).grid(row=3 , column=2, sticky=W+E)
-Button(root,text="+", command=lambda:getOperators("+")).grid(row=3 , column=3, sticky=W+E)
-Button(root,text="-", command=lambda:getOperators("-")).grid(row=3 , column=4, sticky=W+E)
-
-Button(root,text="7", command=lambda:getNumbers(7)).grid(row=4 , column=0, sticky=W+E)
-Button(root,text="8", command=lambda:getNumbers(8)).grid(row=4 , column=1, sticky=W+E)
-Button(root,text="9", command=lambda:getNumbers(9)).grid(row=4 , column=2, sticky=W+E)
-Button(root,text="*", command=lambda:getOperators("*")).grid(row=4 , column=3, sticky=W+E)
-Button(root,text="/", command=lambda:getOperators("/")).grid(row=4 , column=4, sticky=W+E)
-
-Button(root,text="0", command=lambda:getNumbers(0)).grid(row=5 , column=0, sticky=W+E)
-Button(root,text=".", command=lambda:getOperators(".")).grid(row=5 , column=1, sticky=W+E)
-Button(root,text="x", command=lambda:getOperators("x")).grid(row=5 , column=2, sticky=W+E)
-Button(root,text="(", command=lambda:getOperators("(")).grid(row=5 , column=3, sticky=W+E)
-Button(root,text=")", command=lambda:getOperators(")")).grid(row=5 , column=4, sticky=W+E)
-
-Button(root,text="^2", command=lambda:getOperators("**2")).grid(row=6 , column=0, sticky=W+E)
-Button(root,text="^", command=lambda:getOperators("**")).grid(row=6 , column=1, sticky=W+E)
-Button(root,text="√", command=lambda:getOperators("sqrt")).grid(row=6 , column=2, sticky=W+E)
-Button(root,text="π", command=lambda:getOperators("pi")).grid(row=6 , column=3, sticky=W+E)
-Button(root,text="=", command=lambda:calculate()).grid(row=6 , column=4, sticky=W+E)
-
-Button(root,text="sin", command=lambda:getOperators("sin")).grid(row=7 , column=0, sticky=W+E)
-Button(root,text="cos", command=lambda:getOperators("cos")).grid(row=7 , column=1, sticky=W+E)
-Button(root,text="tan", command=lambda:getOperators("tan")).grid(row=7 , column=2, sticky=W+E)
-Button(root,text="e", command=lambda:getOperators("e")).grid(row=7 , column=3, sticky=W+E)
+# Botones
 
 
+Button(root,text="1", command=lambda:getNumbers(1), font=("Helvetica", font_size)).grid(row=2 , column=0, sticky=N+S+W+E)
+Button(root,text="2", command=lambda:getNumbers(2), font=("Helvetica", font_size)).grid(row=2 , column=1, sticky=N+S+W+E)
+Button(root,text="3", command=lambda:getNumbers(3), font=("Helvetica", font_size)).grid(row=2 , column=2, sticky=N+S+W+E)
+Button(root,text="⇐", command=lambda:undo(), font=("Helvetica", font_size)).grid(row=2 , column=3, sticky=N+S+W+E)
+Button(root,text="AC",command=lambda:clearDisplay(), font=("Helvetica", font_size)).grid(row=2 , column=4, sticky=N+S+W+E)
 
+Button(root,text="4", command=lambda:getNumbers(4), font=("Helvetica", font_size)).grid(row=3 , column=0, sticky=N+S+W+E)
+Button(root,text="5", command=lambda:getNumbers(5), font=("Helvetica", font_size)).grid(row=3 , column=1, sticky=N+S+W+E)
+Button(root,text="6", command=lambda:getNumbers(6), font=("Helvetica", font_size)).grid(row=3 , column=2, sticky=N+S+W+E)
+Button(root,text="+", command=lambda:getOperators("+"), font=("Helvetica", font_size)).grid(row=3 , column=3, sticky=N+S+W+E)
+Button(root,text="-", command=lambda:getOperators("-"), font=("Helvetica", font_size)).grid(row=3 , column=4, sticky=N+S+W+E)
+
+Button(root,text="7", command=lambda:getNumbers(7), font=("Helvetica", font_size)).grid(row=4 , column=0, sticky=N+S+W+E)
+Button(root,text="8", command=lambda:getNumbers(8), font=("Helvetica", font_size)).grid(row=4 , column=1, sticky=N+S+W+E)
+Button(root,text="9", command=lambda:getNumbers(9), font=("Helvetica", font_size)).grid(row=4 , column=2, sticky=N+S+W+E)
+Button(root,text="*", command=lambda:getOperators("*"), font=("Helvetica", font_size)).grid(row=4 , column=3, sticky=N+S+W+E)
+Button(root,text="/", command=lambda:getOperators("/"), font=("Helvetica", font_size)).grid(row=4 , column=4, sticky=N+S+W+E)
+
+Button(root,text="0", command=lambda:getNumbers(0), font=("Helvetica", font_size)).grid(row=5 , column=0, sticky=N+S+W+E)
+Button(root,text=".", command=lambda:getOperators("."), font=("Helvetica", font_size)).grid(row=5 , column=1, sticky=N+S+W+E)
+Button(root,text="x", command=lambda:getOperators("x"), font=("Helvetica", font_size)).grid(row=5 , column=2, sticky=N+S+W+E)
+Button(root,text="(", command=lambda:getOperators("("), font=("Helvetica", font_size)).grid(row=5 , column=3, sticky=N+S+W+E)
+Button(root,text=")", command=lambda:getOperators(")"), font=("Helvetica", font_size)).grid(row=5 , column=4, sticky=N+S+W+E)
+
+Button(root,text="^2", command=lambda:getOperators("**2"), font=("Helvetica", font_size)).grid(row=6 , column=0, sticky=N+S+W+E)
+Button(root,text="^", command=lambda:getOperators("**"), font=("Helvetica", font_size)).grid(row=6 , column=1, sticky=N+S+W+E)
+Button(root,text="√", command=lambda:getOperators("sqrt"), font=("Helvetica", font_size)).grid(row=6 , column=2, sticky=N+S+W+E)
+Button(root,text="π", command=lambda:getOperators("pi"), font=("Helvetica", font_size)).grid(row=6 , column=3, sticky=N+S+W+E)
+Button(root,text="=", command=lambda:calculate(), font=("Helvetica", font_size)).grid(row=6 , column=4, sticky=N+S+W+E)
+
+Button(root,text="sin", command=lambda:getOperators("sin"), font=("Helvetica", font_size)).grid(row=7 , column=0, sticky=N+S+W+E)
+Button(root,text="cos", command=lambda:getOperators("cos"), font=("Helvetica", font_size)).grid(row=7 , column=1, sticky=N+S+W+E)
+Button(root,text="tan", command=lambda:getOperators("tan"), font=("Helvetica", font_size)).grid(row=7 , column=2, sticky=N+S+W+E)
+Button(root,text="e", command=lambda:getOperators("e"), font=("Helvetica", font_size)).grid(row=7 , column=3, sticky=N+S+W+E)
+
+
+for i in range(8):
+    root.grid_columnconfigure(i, weight=1)
+    root.grid_rowconfigure(i, weight=1)
 
 root.mainloop()
